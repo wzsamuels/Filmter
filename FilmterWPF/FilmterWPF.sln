@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilmterWPF", "FilmterWPF.csproj", "{741FC3BA-0813-4403-B2AE-D6EF910CE936}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{741FC3BA-0813-4403-B2AE-D6EF910CE936}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{741FC3BA-0813-4403-B2AE-D6EF910CE936}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{741FC3BA-0813-4403-B2AE-D6EF910CE936}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{741FC3BA-0813-4403-B2AE-D6EF910CE936}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F52C58E4-DBE1-42D6-B805-1A07F034AE6D}
+	EndGlobalSection
+EndGlobal

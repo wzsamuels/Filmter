@@ -1,0 +1,26 @@
+﻿<Window x:Class="FilmterWPF.ProgressBar"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FilmterWPF"
+        mc:Ignorable="d"
+        ContentRendered="Window_ContentRendered"
+        Title="ProgressBar" Height="250" Width="350">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="7*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Padding="10" Name="LoadingText"  HorizontalAlignment="Center">Loading Movie Data</TextBlock>
+
+        <ProgressBar Grid.Row="1"  Value="0" Minimum="0" Maximum="100" Name="pbStatus" HorizontalAlignment="Center" Width="280" />
+        <TextBlock Grid.Row="1" Text="{Binding ElementName=pbStatus, Path=Value, StringFormat={}{0:0}%}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <Button Grid.Row="2" Name="CancelButton" Click="Cancel_Button_Click" Content="Cancel" Width="50" Height="20" Margin="170,29,60,1"/>
+        <Button Grid.Row="2" Name="OkButton" Click="Ok_Button_Click" Content="Ok" Width="50" Height="20" Margin="60,29,170,1"  />
+    </Grid>
+
+</Window>
