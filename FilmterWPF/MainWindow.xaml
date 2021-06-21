@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FilmterWPF"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Filmter" Height="600" Width="800">
     <Window.Resources>
         <SolidColorBrush x:Key="Black" Color="Black" />
         <SolidColorBrush x:Key="White" Color="White"/>
@@ -20,6 +20,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         
         <Menu Grid.Row="0" Grid.ColumnSpan="2" Height="auto">
@@ -34,11 +35,13 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="0" BorderThickness="1" BorderBrush="Black" >
-                <GroupBox.Header >Filter By: </GroupBox.Header >
+                <GroupBox.Header >Filter By:</GroupBox.Header >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -52,28 +55,53 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label HorizontalAlignment='Center' Grid.ColumnSpan="2" Content="Filter By:"/>
-                    <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Title</Label>
+                    <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Title</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
+                    <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Year</Label>
                     <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
-                    <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Year</Label>
+                    <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Run Time</Label>
                     <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
-                    <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Run Time</Label>
+                    <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Genre</Label>
                     <TextBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
-                    <Label Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Genre</Label>
-                    <TextBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
-                    <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="Filter!" Height="20"  Width="50"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="1">
-                <RadioButton>
-                </RadioButton>
+            <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" >
+                <GroupBox.Header >Sort By:</GroupBox.Header>
+                <StackPanel>
+                    <RadioButton GroupName="sortBy" x:Name="titleRadio" IsChecked="true">Title</RadioButton>
+                    <RadioButton GroupName="sortBy" x:Name="yearRadio">Year</RadioButton>
+                    <RadioButton GroupName="sortBy" x:Name="runTimeRadio">Run Time</RadioButton>
+                    <RadioButton GroupName="sortBy" x:Name="genresRadio">Genres</RadioButton>
+                    <Separator/>
+                    <RadioButton GroupName="order" x:Name="ascendingRadio" IsChecked="true">Ascending</RadioButton>
+                    <RadioButton GroupName="order" x:Name="descendingRadio" >Descending</RadioButton>
+                </StackPanel>
             </GroupBox>
+            <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="2" BorderThickness="1" BorderBrush="Black" >
+                <GroupBox.Header >Sorting Algorithm:</GroupBox.Header>
+                <StackPanel>
+                    <RadioButton x:Name="bubbleRadio" IsChecked="true">Bubble Sort</RadioButton>
+                    <RadioButton x:Name="insertionRadio">Insertion Sort</RadioButton>
+                    <RadioButton x:Name="mergeRadio">Merge Sort</RadioButton>
+                    <RadioButton x:Name="quickRadio" >Quick Sort</RadioButton>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="3" BorderThickness="1" BorderBrush="Black" >
+                <GroupBox.Header>Data Structure:</GroupBox.Header>
+                <StackPanel>
+                    <RadioButton GroupName="data" Grid.Row="0" x:Name="linearHashRadio" IsChecked="true">Linear Probing Map</RadioButton>
+                    <RadioButton GroupName="data" Grid.Row="1" x:Name="searchTableRadio" >Search Table Map</RadioButton>
+                    <RadioButton GroupName="data" Grid.Row="2">Separate Chaining Hash Map</RadioButton>
+                    <RadioButton GroupName="data" Grid.Row="3">Genres</RadioButton>
+                </StackPanel>
+            </GroupBox>
+            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Filter!" Height="20" Click="Filter_Click" Width="50"/>
         </Grid>
         <DataGrid AutoGenerateColumns="False" Grid.Row="1" Grid.Column="1" x:Name="dataGrid" IsReadOnly="True" HorizontalAlignment="Left" CanUserSortColumns="False" ItemsSource="{Binding}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Title" Binding="{Binding PrimaryTitle}" Width="*">
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*">
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Year" Binding="{Binding StartYear}" Width="*">
+                <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="*">
                     <!--
                     <DataGridTextColumn.CellStyle>
                         <Style TargetType="DataGridCell">
@@ -83,10 +111,28 @@
                     </DataGridTextColumn.CellStyle>
                     -->
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Run Time (Minutes)" Binding="{Binding RuntimeMinutes}" Width="*"/>
+                <DataGridTextColumn Header="Run Time (Minutes)" Binding="{Binding RunTimeMinutes}" Width="*"/>
                 <DataGridTextColumn Header="Genres" Binding="{Binding Genres}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
+        <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem>
+                <TextBlock Text="Sorting Took:"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
 
