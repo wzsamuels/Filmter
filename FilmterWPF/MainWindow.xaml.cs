@@ -1,24 +1,7 @@
 ﻿using FilmterWPF.Data;
-using FilmterWPF.IO;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using DataStructures.List;
-using DataStructures.Hashing;
-using DataStructures.Map;
 using System.Collections.ObjectModel;
-using DataStructures.Sorter;
 
 namespace FilmterWPF
 {
@@ -29,20 +12,25 @@ namespace FilmterWPF
     public partial class MainWindow : Window
     {
         public ObservableCollection<BasicMovie> MovieCollection { get; set; }
-        private string path = "../../../basicdata.tsv";
+        private readonly string path = "../../../basicdata.tsv";
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// After the window's content is loaded, populate the data grid with movie entries.     
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ProgressBar pb = new(path);
 
             bool? result = pb.ShowDialog();
 
-            if (result == true)
+            if (pb.MovieList != null)
             {
 
                 MovieCollection = new(pb.MovieList);
@@ -57,50 +45,109 @@ namespace FilmterWPF
 
         private void Filter_Click(object sender, RoutedEventArgs e)
         {
-            SortInfo sortInfo;
-            sortInfo.ascending = (bool)ascendingRadio.IsChecked;
+            FilterInfo filterInfo = new("", "", "", "");
 
-            if(linearHashRadio.IsChecked == true)
+            if(!String.IsNullOrEmpty(titleTextBox.Text))
+            {
+                filterInfo.title = titleTextBox.Text;
+            }
+            if (!String.IsNullOrEmpty(yearTextBox.Text))
+            {
+                filterInfo.year = yearTextBox.Text;
+            }
+            if (!String.IsNullOrEmpty(runTimeTextBox.Text))
+            {
+                filterInfo.runTime = runTimeTextBox.Text;
+            }
+            if (!String.IsNullOrEmpty(genreTextBox.Text))
+            {
+                filterInfo.genre = genreTextBox.Text;
+            }
+
+            // Initialize sortInfo with some default values
+            SortInfo sortInfo = new(SortBy.Title, SortingAlgorithm.MergeSort, true, DataType.LinearHash)
+            {
+                ascending = (bool)ascendingRadio.IsChecked
+            };
+
+            if (linearHashRadio.IsChecked == true)
             {
                 sortInfo.dataType = DataType.LinearHash;
             }
-            else
+            else if(searchTableRadio.IsChecked == true)
             {
-                sortInfo.dataType = 0;
+                sortInfo.dataType = DataType.SearchTableMap;
+            }
+            else if(separateChainingRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.SeparateChaining;
+            }
+            else if(unorderedArrayRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.UnorderedArrayMap;
             }
 
+            // Checking sorting algorithm
             if(bubbleRadio.IsChecked == true)
             {
                 sortInfo.sortingAlgorithm = SortingAlgorithm.BubbleSort;
             }
-            else 
+            else if(mergeRadio.IsChecked == true)
             {
-                sortInfo.sortingAlgorithm = 0;
+                sortInfo.sortingAlgorithm = SortingAlgorithm.MergeSort;
+            }
+            else if(insertionRadio.IsChecked == true)
+            {
+                sortInfo.sortingAlgorithm = SortingAlgorithm.InsertionSort;
+            }
+            else if(quickRadio.IsChecked == true)
+            {
+                sortInfo.sortingAlgorithm = SortingAlgorithm.QuickSort;
+            }
+            else if(selectionRadio.IsChecked == true)
+            {
+                sortInfo.sortingAlgorithm = SortingAlgorithm.SelectionSort;
             }
 
+            // Check sort by
             if(yearRadio.IsChecked == true)
             {
                 sortInfo.sortBy = SortBy.Year;
             }
+            else if(titleRadio.IsChecked == true)
+            {
+                sortInfo.sortBy = SortBy.Title;
+            }
+            else if(runTimeRadio.IsChecked == true)
+            {
+                sortInfo.sortBy = SortBy.RunTimeMinutes;
+            }
             else
             {
-                sortInfo.sortBy = 0;
+                sortInfo.sortBy = SortBy.Genres;
             }
 
-            SortProgress window = new(sortInfo, MovieCollection);
-
-            bool? result = window.ShowDialog();
-
-            if(result == true)
+            SortProgress window = new(sortInfo, filterInfo, MovieCollection);
+            if (window.ShowDialog() == true)
             {
-                
                     dataGrid.DataContext = window.MovieList;
             }
-            else 
+        }
+
+        public struct FilterInfo
+        {
+            public string title;
+            public string year;
+            public string runTime;
+            public string genre;
+
+            public FilterInfo(string title, string year, string runTime, string genre)
             {
-                dataGrid.DataContext = null;
+                this.title = title;
+                this.year = year;
+                this.runTime = runTime;
+                this.genre = genre;
             }
-            
         }
 
         public struct SortInfo
@@ -109,6 +156,14 @@ namespace FilmterWPF
             public SortingAlgorithm sortingAlgorithm;
             public bool ascending;
             public DataType dataType;
+
+            public SortInfo(SortBy sortBy, SortingAlgorithm sortingAlgorithm, bool ascending, DataType dataType)
+            {
+                this.sortBy = sortBy;
+                this.sortingAlgorithm = sortingAlgorithm;
+                this.ascending = ascending;
+                this.dataType = dataType;
+            }
         }
 
         public enum SortBy
@@ -121,12 +176,23 @@ namespace FilmterWPF
 
         public enum DataType
         {
-            LinearHash
+            AVLTreeMap,
+            LinearHash,
+            SearchTableMap,
+            SeparateChaining,
+            SkipListMap,
+            RedBlackTreeMap,
+            UnorderedArrayMap,
+            UnorderedLinkedMap
         }
 
         public enum SortingAlgorithm
         {
-            BubbleSort
+            BubbleSort,
+            InsertionSort,
+            MergeSort,
+            QuickSort,
+            SelectionSort
         }
     }
 }
