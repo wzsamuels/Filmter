@@ -2,20 +2,9 @@
 using DataStructures.List;
 using FilmterWPF.Data;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FilmterWPF
 {
@@ -24,7 +13,7 @@ namespace FilmterWPF
     /// </summary>
     public partial class ProgressBar : Window
     {
-        private string path;
+        private readonly string path;
         private BackgroundWorker worker;
 
         public SinglyLinkedList<BasicMovie> MovieList { get; set; }
@@ -34,6 +23,7 @@ namespace FilmterWPF
         {
             this.path = path;
             MovieMap = new();
+            MovieList = null;
 
             InitializeComponent();
 
@@ -41,19 +31,25 @@ namespace FilmterWPF
             CancelButton.IsEnabled = true;
         }
 
+        /// <summary>
+        /// As soon as the window's content is rendered, begin running the background worker task
+        /// to read the movie data file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             worker = new();
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;
-            worker.DoWork += worker_DoWork;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerCompleted += work_WorkerCompleted;
+            worker.DoWork += Worker_DoWork;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.RunWorkerCompleted += Work_WorkerCompleted;
 
             worker.RunWorkerAsync();
         }
 
-        private void work_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Work_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {
@@ -69,17 +65,22 @@ namespace FilmterWPF
             }
             else
             {
-                DialogResult = true;
                 MovieList = (SinglyLinkedList<BasicMovie>)e.Result;
+                DialogResult = true;
             }
         }
 
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             pbStatus.Value = e.ProgressPercentage;
         }
 
-        private int TotalLines()
+        /// <summary>
+        /// Helper method to determine the total number of entries in the movie data file.
+        /// Used for the percentage complete on the progress bar.
+        /// </summary>
+        /// <returns>The number of entries in the data file.</returns>
+        private int TotalEntriesHelper()
         {
             using StreamReader r = new(path);
             int i = 0;
@@ -87,9 +88,8 @@ namespace FilmterWPF
             return i;
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
             e.Result = ReadBasicMovieFile(e);
         }
 
@@ -98,8 +98,8 @@ namespace FilmterWPF
             bool firstLine = true;
             SinglyLinkedList<BasicMovie> movieList = new();
 
-            //int totalLines = TotalLines();
-            int totalLines = 10000;
+            int totalLines = TotalEntriesHelper();
+            //int totalLines = 100000;
             int currentLine = 0;
 
             using (StreamReader reader = File.OpenText(path))
@@ -124,7 +124,8 @@ namespace FilmterWPF
                         }
                         else
                         {
-                            year = null;
+                            //year = null;
+                            continue;
                         }
 
                         int? runTimeMinutes;
@@ -134,7 +135,8 @@ namespace FilmterWPF
                         }
                         else
                         {
-                            runTimeMinutes = null;
+                            //runTimeMinutes = null;
+                            continue;
                         }
 
                         string genres = values[5];
@@ -259,8 +261,14 @@ namespace FilmterWPF
         }
         */
 
+        /// <summary>
+        /// Handled the OKButton being clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Ok_Button_Click(object sender, RoutedEventArgs e)
         {
+            DialogResult = true;
             Close();
         }
 
