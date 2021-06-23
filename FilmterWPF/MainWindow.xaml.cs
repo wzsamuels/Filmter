@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace FilmterWPF
 {
@@ -9,14 +10,60 @@ namespace FilmterWPF
     /// Interaction logic for MainWindow.xaml
     /// </summary>     
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public ObservableCollection<BasicMovie> MovieCollection { get; set; }
+        #region Private fields
         private readonly string path = "../../../basicdata.tsv";
+        private string _movieEntryCount = "0";
+        private string _movieDisplayCount = "0";
+        private string _lastSortTime = "0";
+        #endregion
+
+        #region Properties
+        public ObservableCollection<BasicMovie> MovieCollection { get; set; }
+        
+        public string MovieEntryCount
+        {
+            get => _movieEntryCount;
+            set
+            {
+                _movieEntryCount = value;
+                OnPropertyChanged("MovieEntryCount");
+            }
+        }
+
+        public string MovieDisplayCount
+        {
+            get => _movieDisplayCount;
+            set
+            {
+                _movieDisplayCount = value;
+                OnPropertyChanged("MovieDisplayCount");
+            }
+        }
+
+        public string LastSortTime
+        {
+            get => _lastSortTime;
+            set
+            {
+                _lastSortTime = value;
+                OnPropertyChanged("LastSortTime");
+            }
+        }
+        #endregion
 
         public MainWindow()
         {
             InitializeComponent();
+
+            this.DataContext = this; //So variables can bind to UI
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string strPropertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(strPropertyName));
         }
 
         /// <summary>
@@ -26,7 +73,7 @@ namespace FilmterWPF
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ProgressBar pb = new(path);
+            LoadMovieWindow pb = new(path);
 
             bool? result = pb.ShowDialog();
 
@@ -35,6 +82,8 @@ namespace FilmterWPF
 
                 MovieCollection = new(pb.MovieList);
                 dataGrid.DataContext = MovieCollection;
+                MovieEntryCount = MovieCollection.Count.ToString();
+                MovieDisplayCount = MovieCollection.Count.ToString();
             }
             else
             {
@@ -70,9 +119,21 @@ namespace FilmterWPF
                 ascending = (bool)ascendingRadio.IsChecked
             };
 
-            if (linearHashRadio.IsChecked == true)
+            if (avlTreeRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.AVLTreeMap;
+            }
+            else if (binaryTreeRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.BinaryTree;
+            }
+            else if (linearHashRadio.IsChecked == true)
             {
                 sortInfo.dataType = DataType.LinearHash;
+            }
+            else if (redBlackRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.RedBlackTree;
             }
             else if(searchTableRadio.IsChecked == true)
             {
@@ -82,13 +143,25 @@ namespace FilmterWPF
             {
                 sortInfo.dataType = DataType.SeparateChaining;
             }
+            else if (skipListRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.SkipListMap;
+            }
+            else if (splayTreeRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.SplayTree;
+            }
             else if(unorderedArrayRadio.IsChecked == true)
             {
                 sortInfo.dataType = DataType.UnorderedArrayMap;
             }
+            else if (unorderedLinkedRadio.IsChecked == true)
+            {
+                sortInfo.dataType = DataType.UnorderedLinkedMap;
+            }
 
             // Checking sorting algorithm
-            if(bubbleRadio.IsChecked == true)
+            if (bubbleRadio.IsChecked == true)
             {
                 sortInfo.sortingAlgorithm = SortingAlgorithm.BubbleSort;
             }
@@ -127,10 +200,12 @@ namespace FilmterWPF
                 sortInfo.sortBy = SortBy.Genres;
             }
 
-            SortProgress window = new(sortInfo, filterInfo, MovieCollection);
+            SortMovieWindow window = new(sortInfo, filterInfo, MovieCollection);
             if (window.ShowDialog() == true)
             {
-                    dataGrid.DataContext = window.MovieList;
+                dataGrid.DataContext = window.MovieList;
+                MovieDisplayCount = window.MovieList.Count.ToString();
+                LastSortTime = window.SortTime;
             }
         }
 
@@ -166,6 +241,9 @@ namespace FilmterWPF
             }
         }
 
+        /// <summary>
+        /// SortBy 
+        /// </summary>
         public enum SortBy
         {
             Year,
@@ -177,11 +255,13 @@ namespace FilmterWPF
         public enum DataType
         {
             AVLTreeMap,
+            BinaryTree,
             LinearHash,
+            RedBlackTree,
             SearchTableMap,
             SeparateChaining,
             SkipListMap,
-            RedBlackTreeMap,
+            SplayTree,
             UnorderedArrayMap,
             UnorderedLinkedMap
         }
@@ -193,6 +273,15 @@ namespace FilmterWPF
             MergeSort,
             QuickSort,
             SelectionSort
+        }
+
+        private void QuitMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to quit?", "Exit",
+                MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                Close();
+            }
         }
     }
 }

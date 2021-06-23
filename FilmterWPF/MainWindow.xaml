@@ -6,27 +6,27 @@
         xmlns:local="clr-namespace:FilmterWPF"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="Filmter" Height="600" Width="800">
+        Title="Filmter" Height="650" Width="800" MinHeight="650" MinWidth="650">
     <Window.Resources>
         <SolidColorBrush x:Key="Black" Color="Black" />
         <SolidColorBrush x:Key="White" Color="White"/>
     </Window.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        
+
         <Menu Grid.Row="0" Grid.ColumnSpan="2" Height="auto">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open"/>
-                <MenuItem Header="_Quit"/>
+                <MenuItem Click="QuitMenuItem_Click" Header="_Quit"/>
             </MenuItem>
         </Menu>
         <Grid Grid.Row="1" Grid.Column="0" Margin="0,0,20,0">
@@ -80,23 +80,29 @@
             <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="2" BorderThickness="1" BorderBrush="Black" >
                 <GroupBox.Header >Sorting Algorithm:</GroupBox.Header>
                 <StackPanel>
-                    <RadioButton x:Name="bubbleRadio" IsChecked="true">Bubble Sort</RadioButton>
+                    <RadioButton x:Name="bubbleRadio">Bubble Sort</RadioButton>
                     <RadioButton x:Name="insertionRadio">Insertion Sort</RadioButton>
-                    <RadioButton x:Name="mergeRadio">Merge Sort</RadioButton>
+                    <RadioButton x:Name="mergeRadio" IsChecked="true">Merge Sort</RadioButton>
                     <RadioButton x:Name="quickRadio" >Quick Sort</RadioButton>
                     <RadioButton x:Name="selectionRadio" >Selection Sort</RadioButton>
                 </StackPanel>
             </GroupBox>
             <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="3" BorderThickness="1" BorderBrush="Black" >
-                <GroupBox.Header>Data Structure:</GroupBox.Header>
+                <GroupBox.Header>Map Data Structure:</GroupBox.Header>
                 <StackPanel>
-                    <RadioButton GroupName="data" Grid.Row="0" x:Name="linearHashRadio" IsChecked="true">Linear Probing Map</RadioButton>
-                    <RadioButton GroupName="data" Grid.Row="1" x:Name="searchTableRadio" >Search Table Map</RadioButton>
-                    <RadioButton GroupName="data" Grid.Row="2" x:Name="separateChainingRadio">Separate Chaining Hash Map</RadioButton>
-                    <RadioButton GroupName="data" Grid.Row="3" x:Name="unorderedArrayRadio">Unordered Array Map</RadioButton>
+                    <RadioButton GroupName="data" x:Name="avlTreeRadio" IsChecked="True">AVL Tree</RadioButton>
+                    <RadioButton GroupName="data" x:Name="binaryTreeRadio">Binary Search Tree</RadioButton>
+                    <RadioButton GroupName="data" x:Name="linearHashRadio">Linear Probing Hash</RadioButton>
+                    <RadioButton GroupName="data" x:Name="redBlackRadio">Red Black Tree</RadioButton>
+                    <RadioButton GroupName="data" x:Name="searchTableRadio" >Search Table</RadioButton>
+                    <RadioButton GroupName="data" x:Name="separateChainingRadio">Separate Chaining Hash</RadioButton>
+                    <RadioButton GroupName="data" x:Name="skipListRadio">Skip List</RadioButton>
+                    <RadioButton GroupName="data" x:Name="splayTreeRadio">Splay Tree</RadioButton>
+                    <RadioButton GroupName="data" x:Name="unorderedArrayRadio">Unordered Array</RadioButton>
+                    <RadioButton GroupName="data" x:Name="unorderedLinkedRadio">Unordered Linked List</RadioButton>
                 </StackPanel>
             </GroupBox>
-            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Filter!" Height="20" Click="Filter_Click" Width="50"/>
+            <Button Grid.Row="4" Grid.Column="0" IsDefault="True" Content="Sort and Filter" Height="20" Click="Filter_Click" Width="auto" HorizontalAlignment="center" VerticalAlignment="Center" Margin="0,18,0,0" />
         </Grid>
         <DataGrid AutoGenerateColumns="False" Grid.Row="1" Grid.Column="1" x:Name="dataGrid" IsReadOnly="True" HorizontalAlignment="Left" CanUserSortColumns="False" ItemsSource="{Binding}">
             <DataGrid.Columns>
@@ -121,17 +127,26 @@
                 <ItemsPanelTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            <StatusBarItem>
-                <TextBlock Text="Sorting Took:"/>
+            <StatusBarItem Grid.Column="0">
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Displaying {0} of {1} Movie Entries">
+                            <Binding Path="MovieDisplayCount" />
+                            <Binding Path="MovieEntryCount" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StatusBarItem>
+            <Separator Grid.Column="1" />
+            <StatusBarItem Grid.Column="2">
+                <TextBlock Text="{Binding LastSortTime, StringFormat={}Last Sort Took {0:5} Seconds}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
