@@ -27,7 +27,6 @@ namespace FilmterWPF.IO
             SinglyLinkedList<BasicMovie> movieList = new();
 
             int totalLines = TotalEntriesHelper(path);
-            //int totalLines = 100000;
             int currentLine = 0;
 
             using (StreamReader reader = File.OpenText(path))
@@ -53,8 +52,8 @@ namespace FilmterWPF.IO
                         }
                         else
                         {
-                            //year = null;
-                            continue;
+                            year = null;
+                            //continue;
                         }
 
                         // Convert string run time minutes to int. Skip over entries with no value.
@@ -65,8 +64,8 @@ namespace FilmterWPF.IO
                         }
                         else
                         {
-                            //runTimeMinutes = null;
-                            continue;
+                            runTimeMinutes = null;
+                            //continue;
                         }
 
                         string genres = values[5];
@@ -77,7 +76,7 @@ namespace FilmterWPF.IO
 
                         currentLine++;
                         int percentComplete = (int)((float)currentLine / (float)totalLines * 100);
-                        worker.ReportProgress(percentComplete);
+                        worker.ReportProgress(percentComplete, $"Movies loaded: {currentLine} / {totalLines}");
 
                         if (worker.CancellationPending)
                         {
@@ -88,7 +87,7 @@ namespace FilmterWPF.IO
                     }
                 }
             }
-            worker.ReportProgress(100);
+            worker.ReportProgress(100, $"Movies loaded: {totalLines} / {totalLines}");
             return movieList;
         }
 
@@ -98,7 +97,6 @@ namespace FilmterWPF.IO
             bool firstLine = true;
 
             int totalLines = TotalEntriesHelper(path);
-            //int totalLines = 10000;
             int currentLine = 0;
 
             using (StreamReader reader = File.OpenText(path))
