@@ -56,13 +56,13 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Title</Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
+                    <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20" x:Name="titleTextBox"></TextBox>
                     <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Year</Label>
-                    <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
+                    <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20" x:Name="yearTextBox" ></TextBox>
                     <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Run Time</Label>
-                    <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
+                    <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20" x:Name="runTimeTextBox" ></TextBox>
                     <Label Grid.Row="3" Grid.Column="0" VerticalAlignment="Center">Genre</Label>
-                    <TextBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20"></TextBox>
+                    <TextBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Width="100" Height="20" x:Name="genreTextBox"></TextBox>
                 </Grid>
             </GroupBox>
             <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="1" BorderThickness="1" BorderBrush="Black" >
@@ -84,6 +84,7 @@
                     <RadioButton x:Name="insertionRadio">Insertion Sort</RadioButton>
                     <RadioButton x:Name="mergeRadio">Merge Sort</RadioButton>
                     <RadioButton x:Name="quickRadio" >Quick Sort</RadioButton>
+                    <RadioButton x:Name="selectionRadio" >Selection Sort</RadioButton>
                 </StackPanel>
             </GroupBox>
             <GroupBox Background="#F5F5F3" Grid.Column="0" Grid.Row="3" BorderThickness="1" BorderBrush="Black" >
@@ -91,8 +92,8 @@
                 <StackPanel>
                     <RadioButton GroupName="data" Grid.Row="0" x:Name="linearHashRadio" IsChecked="true">Linear Probing Map</RadioButton>
                     <RadioButton GroupName="data" Grid.Row="1" x:Name="searchTableRadio" >Search Table Map</RadioButton>
-                    <RadioButton GroupName="data" Grid.Row="2">Separate Chaining Hash Map</RadioButton>
-                    <RadioButton GroupName="data" Grid.Row="3">Genres</RadioButton>
+                    <RadioButton GroupName="data" Grid.Row="2" x:Name="separateChainingRadio">Separate Chaining Hash Map</RadioButton>
+                    <RadioButton GroupName="data" Grid.Row="3" x:Name="unorderedArrayRadio">Unordered Array Map</RadioButton>
                 </StackPanel>
             </GroupBox>
             <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Filter!" Height="20" Click="Filter_Click" Width="50"/>
