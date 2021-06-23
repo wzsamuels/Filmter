@@ -7,13 +7,14 @@ using DataStructures.Sorter;
 using DataStructures.Hashing;
 using static FilmterWPF.MainWindow;
 using System.Collections.ObjectModel;
+using DataStructures.SearchTree;
 
 namespace FilmterWPF
 {
     /// <summary>
-    /// Interaction logic for SortProgress.xaml
+    /// Interaction logic for SortMovieWindow.xaml
     /// </summary>
-    public partial class SortProgress : Window
+    public partial class SortMovieWindow : Window
     {
         private BackgroundWorker worker;
         private SortInfo sortInfo;
@@ -23,8 +24,9 @@ namespace FilmterWPF
         private readonly ObservableCollection<BasicMovie> moviesToSort;
         private TimeSpan sortTimeSpan;
         private TimeSpan buildMapTimeSpan;
+        public string SortTime { get; set; }
 
-        public SortProgress(SortInfo sortInfo, FilterInfo filterInfo, ObservableCollection<BasicMovie> moviesToSort)
+        public SortMovieWindow(SortInfo sortInfo, FilterInfo filterInfo, ObservableCollection<BasicMovie> moviesToSort)
         {
             InitializeComponent();
 
@@ -40,14 +42,14 @@ namespace FilmterWPF
             worker = new();
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;
-            worker.DoWork += worker_DoWork;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerCompleted += work_WorkerCompleted;
+            worker.DoWork += Worker_DoWork;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.RunWorkerCompleted += Work_WorkerCompleted;
 
             worker.RunWorkerAsync();
         }
 
-        private void work_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Work_WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {
@@ -62,9 +64,7 @@ namespace FilmterWPF
                 DialogResult = false;
             }
             else
-            {
-                MovieList = (ObservableCollection<BasicMovie>)e.Result;
-
+            {                
                 Dispatcher.Invoke(new Action(() =>
                 {
                     pbStatus.IsIndeterminate = false;
@@ -73,15 +73,18 @@ namespace FilmterWPF
                     $"Sorting took: {sortTimeSpan.TotalSeconds:F5} seconds.\n";
                     
                 }));
+
+                MovieList = (ObservableCollection<BasicMovie>)e.Result;
+                SortTime = sortTimeSpan.TotalSeconds.ToString();
             }
         }
 
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             pbStatus.Value = e.ProgressPercentage;
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             e.Result = SortAndFilter(e);
         }
@@ -91,16 +94,21 @@ namespace FilmterWPF
             AbstractComparisonSorter<BasicMovie> sorter = null;                    
             IMap<string, BasicMovie> movieMap = null;
 
-            
-
-            //if (mw.linearHashRadio.IsChecked == true)
-            if(sortInfo.dataType == DataType.LinearHash)
+            if (sortInfo.dataType == DataType.AVLTreeMap)
+            {
+                movieMap = new AVLTreeMap<string, BasicMovie>();
+            }
+            else if (sortInfo.dataType == DataType.BinaryTree)
+            {
+                movieMap = new BinarySearchTreeMap<string, BasicMovie>();
+            }
+            else if (sortInfo.dataType == DataType.LinearHash)
             {
                 movieMap = new LinearProbingHashMap<string, BasicMovie>();
-            }       
-            else if(sortInfo.dataType == DataType.UnorderedArrayMap)
+            }
+            else if(sortInfo.dataType == DataType.RedBlackTree)
             {
-                movieMap = new UnorderedArrayMap<string, BasicMovie>();
+                movieMap = new RedBlackTreeMap<string, BasicMovie>();
             }
             else if (sortInfo.dataType == DataType.SeparateChaining)
             {
@@ -110,8 +118,25 @@ namespace FilmterWPF
             {
                 movieMap = new SearchTableMap<string, BasicMovie>();
             }
+            else if (sortInfo.dataType == DataType.SkipListMap)
+            {
+                movieMap = new SkipListMap<string, BasicMovie>();
+            }
+            else if (sortInfo.dataType == DataType.SplayTree)
+            {
+                movieMap = new SplayTreeMap<string, BasicMovie>();
+            }
+            else if (sortInfo.dataType == DataType.UnorderedArrayMap)
+            {
+                movieMap = new UnorderedArrayMap<string, BasicMovie>();
+            }
+            else if (sortInfo.dataType == DataType.UnorderedLinkedMap)
+            {
+                movieMap = new UnorderedLinkedMap<string, BasicMovie>();
+            }
 
             // Check for sorting algorithm
+
             if (sortInfo.sortingAlgorithm == SortingAlgorithm.BubbleSort)
             {
                 sorter = new BubbleSorter<BasicMovie>();
@@ -138,7 +163,6 @@ namespace FilmterWPF
             {
                 if (sortInfo.ascending)
                 {
-
                     sorter.SetComparator(BasicMovie.SortYearAscending());
                 }
                 else
@@ -152,7 +176,7 @@ namespace FilmterWPF
                 {
                     sorter.SetComparator(BasicMovie.SortTitleAscending());
                 }
-                else 
+                else
                 {
                     sorter.SetComparator(BasicMovie.SortTitleDescending());
                 }
@@ -174,7 +198,7 @@ namespace FilmterWPF
                 {
                     sorter.SetComparator(BasicMovie.SortGenresAscending());
                 }
-                else 
+                else
                 {
                     sorter.SetComparator(BasicMovie.SortGenresDescending());
                 }
@@ -189,6 +213,8 @@ namespace FilmterWPF
             float currentCount = 0;
             float totalCount = moviesToSort.Count;
             DateTime beginMapTime = DateTime.Now;            
+
+            // Check each movie entry for filter criteria 
             foreach (BasicMovie movie in moviesToSort)
             {
                 bool titleMatch = true;
@@ -218,7 +244,7 @@ namespace FilmterWPF
                 }
 
                 currentCount++;
-                worker.ReportProgress((int)(currentCount/totalCount * 100));
+                worker.ReportProgress((int)(currentCount / totalCount * 100));
             }
             DateTime endMapTime = DateTime.Now;
             buildMapTimeSpan = endMapTime - beginMapTime;
@@ -241,13 +267,11 @@ namespace FilmterWPF
             {
                 pbStatus.Value = 0;
                 pbStatus.IsIndeterminate = true;
-            }));
-
-            Dispatcher.Invoke(new Action(() =>
-            {
                 LoadingText.Text = "Sorting...";
             }));
+       
 
+            // Sort the movies 
             DateTime beginSortTime = DateTime.Now;
             sorter.Sort(movieArray);
             DateTime endSortTime = DateTime.Now;

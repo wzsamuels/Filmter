@@ -4,15 +4,14 @@ using FilmterWPF.Data;
 using FilmterWPF.IO;
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Windows;
 
 namespace FilmterWPF
 {
     /// <summary>
-    /// Interaction logic for ProgressBar.xaml
+    /// Interaction logic for LoadMovieWindow.xaml
     /// </summary>
-    public partial class ProgressBar : Window
+    public partial class LoadMovieWindow : Window
     {
         private readonly string path;
         private BackgroundWorker worker;
@@ -22,7 +21,7 @@ namespace FilmterWPF
         public int EntryCount { get; set; }
         public int EntryTotal { get; set; }
 
-        public ProgressBar(string path)
+        public LoadMovieWindow(string path)
         {
             this.path = path;
             MovieMap = new();
@@ -76,7 +75,7 @@ namespace FilmterWPF
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             pbStatus.Value = e.ProgressPercentage;
-            
+            entryCountText.Text = e.UserState.ToString();
         }
 
         private void Worker_DoWork(object sender, DoWorkEventArgs e)
