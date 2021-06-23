@@ -17,9 +17,9 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Padding="10" Name="LoadingText"  HorizontalAlignment="Center" Text="Building Map..."/>
 
-        <ProgressBar Grid.Row="1"  Value="0" Minimum="0" Maximum="100" Name="pbStatus" HorizontalAlignment="Center" Width="280" IsIndeterminate="True" />
-        <Button Grid.Row="2" Name="CancelButton" Click="Cancel_Button_Click" Content="Cancel" Width="50" Height="20" Margin="170,29,60,1"/>
-        <Button Grid.Row="2" Name="OkButton" Click="Ok_Button_Click" Content="Ok" Width="50" Height="20" Margin="60,29,170,1"  />
+        <ProgressBar Grid.Row="1"  Value="0" Minimum="0" Maximum="100" Name="pbStatus" HorizontalAlignment="Center" Width="280"/>
+        <Button Grid.Row="2" Name="CancelButton" Click="Cancel_Button_Click" Content="Cancel" Width="50" Height="20" Margin="170,29,60,1" IsCancel="True"/>
+        <Button Grid.Row="2" Name="OkButton" Click="Ok_Button_Click" Content="Ok" Width="50" Height="20" Margin="60,29,170,1" IsDefault="True"/>
     </Grid>
 
 </Window>
