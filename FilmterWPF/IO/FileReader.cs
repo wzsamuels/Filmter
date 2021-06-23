@@ -1,12 +1,7 @@
 ﻿using FilmterWPF.Data;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataStructures.List;
-using System.Windows;
 
 namespace FilmterWPF.IO
 {
