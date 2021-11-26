@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FilmterWPF"
         mc:Ignorable="d"
         ContentRendered="Window_ContentRendered"
-        Title="ProgressBar" Height="280" Width="350">
+        Title="Loading Movies" Height="280" Width="350">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

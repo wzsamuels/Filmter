@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FilmterWPF"
         mc:Ignorable="d"
         ContentRendered="Window_ContentRendered"
-        Title="ProgressBar" Height="250" Width="350">
+        Title="Sorting Movies" Height="250" Width="350">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
